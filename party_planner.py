@@ -1,5 +1,7 @@
-# party_planner.py
+#!/usr/bin/env python3
+import cgi
 import sys
+import json
 
 party_items = [
     ("Cake", 20),
@@ -16,52 +18,50 @@ party_items = [
     ("Streamers", 18),
     ("Invitation Cards", 4),
     ("Party Games", 2),
-    ("Cleaning Service", 11),
+    ("Cleaning Service", 11)
 ]
 
-def calculate_base_code(selected_indices):
-    if not selected_indices:
-        return 0, []
-    values = [party_items[i][1] for i in selected_indices]
-    base_code = values[0]
-    breakdown = [str(values[0])]
-    for val in values[1:]:
-        breakdown.append(f"& {val}")
-        base_code &= val
-    return base_code, breakdown
-
-def modify_code(base_code):
-    if base_code == 0:
-        return base_code + 5, "Epic Party Incoming!"
-    elif base_code > 5:
-        return base_code - 2, "Let's keep it classy!"
-    else:
-        return base_code, "Chill vibes only!"
-
 def main():
-    # For web: expect comma-separated indices passed as an argument
-    input_str = sys.argv[1] if len(sys.argv) > 1 else input("Enter item indices separated by commas (e.g., 0, 2): ")
-    selected_indices = [int(i.strip()) for i in input_str.split(",") if i.strip().isdigit()]
-    selected_items = [party_items[i][0] for i in selected_indices]
+    if len(sys.argv) < 2:
+        print("Content-Type: text/html\n")
+        print("<h3>Error: No input provided.</h3>")
+        return
 
-    base_code, breakdown = calculate_base_code(selected_indices)
-    adjusted_code, message = modify_code(base_code)
+    indices_input = sys.argv[1]
+    try:
+        indices = list(map(int, indices_input.split(",")))
+    except ValueError:
+        print("Content-Type: text/html\n")
+        print("<h3>Error: Invalid input. Please enter valid indices.</h3>")
+        return
 
-    print("Content-type: text/html\n")
-    print("<html><body>")
-    print("<h2>Selected Items:</h2>")
-    print("<ul>")
-    for item in selected_items:
-        print(f"<li>{item}</li>")
-    print("</ul>")
-    print(f"<p>Base Party Code: {' '.join(breakdown)} = {base_code}</p>")
+    selected_items = [party_items[i] for i in indices if 0 <= i < len(party_items)]
+    if not selected_items:
+        print("Content-Type: text/html\n")
+        print("<h3>Error: No valid items selected.</h3>")
+        return
+
+    values = [item[1] for item in selected_items]
+    base_code = values[0]
+    for v in values[1:]:
+        base_code &= v
+
     if base_code == 0:
-        print(f"<p>Adjusted Party Code: {base_code} + 5 = {adjusted_code}</p>")
+        final_code = base_code + 5
+        message = "Epic Party Incoming!"
     elif base_code > 5:
-        print(f"<p>Adjusted Party Code: {base_code} - 2 = {adjusted_code}</p>")
-    print(f"<p><strong>Final Party Code: {adjusted_code}</strong></p>")
+        final_code = base_code - 2
+        message = "Let's keep it classy!"
+    else:
+        final_code = base_code
+        message = "Chill vibes only!"
+
+    # HTML output
+    print("<h2>Party Plan Results</h2>")
+    print("<p><strong>Selected Items:</strong> " + ", ".join([item[0] for item in selected_items]) + "</p>")
+    print(f"<p><strong>Base Party Code:</strong> {base_code}</p>")
+    print(f"<p><strong>Final Party Code:</strong> {final_code}</p>")
     print(f"<p><strong>Message:</strong> {message}</p>")
-    print("</body></html>")
 
 if __name__ == "__main__":
     main()

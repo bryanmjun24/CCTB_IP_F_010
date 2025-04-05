@@ -1,23 +1,24 @@
-<!-- party_form.php -->
 <!DOCTYPE html>
 <html>
 <head>
     <title>Party Planner</title>
 </head>
 <body>
-    <h1>Select Your Party Items</h1>
-    <form method="GET" action="run_party_planner.php">
+    <h2>Select Party Items</h2>
+    <form action="party.php" method="post">
         <?php
         $items = [
-            "Cake", "Balloons", "Music System", "Lights", "Catering Service",
-            "DJ", "Photo Booth", "Tables", "Chairs", "Drinks",
-            "Party Hats", "Streamers", "Invitation Cards", "Party Games", "Cleaning Service"
+            "Cake", "Balloons", "Music System", "Lights", "Catering Service", "DJ",
+            "Photo Booth", "Tables", "Chairs", "Drinks", "Party Hats", "Streamers",
+            "Invitation Cards", "Party Games", "Cleaning Service"
         ];
+
         foreach ($items as $index => $item) {
-            echo "<label><input type='checkbox' name='items[]' value='$index'> $item</label><br>";
+            echo "<input type='checkbox' name='items[]' value='$index'> $index: $item<br>";
         }
         ?>
-        <input type="submit" value="Plan Party">
+        <br>
+        <input type="submit" value="Calculate Party Code">
     </form>
 </body>
 </html>
