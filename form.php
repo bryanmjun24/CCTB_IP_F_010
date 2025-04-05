@@ -4,6 +4,7 @@
     <title>Party Planner</title>
 </head>
 <body>
+    <h1>Server </h1>
     <h2>Select Party Items</h2>
     <form action="party.php" method="post">
         <?php
